@@ -53,6 +53,111 @@ const AppPage = () => {
     scrollToBottom();
   }, [messages]);
 
+  const [generatedComponent, setGeneratedComponent] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateComponent = (prompt: string) => {
+    const templates = {
+      "landing page": `
+        <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 text-white">
+          <header className="p-6 flex justify-between items-center">
+            <h1 className="text-2xl font-bold">MyApp</h1>
+            <button className="bg-white text-blue-600 px-4 py-2 rounded-lg">Sign Up</button>
+          </header>
+          <main className="flex flex-col items-center justify-center text-center px-6 py-20">
+            <h1 className="text-6xl font-bold mb-6">Welcome to the Future</h1>
+            <p className="text-xl mb-8 max-w-2xl">Build amazing applications with our powerful platform</p>
+            <button className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold">Get Started</button>
+          </main>
+        </div>
+      `,
+      "todo app": `
+        <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">Todo App</h1>
+          <div className="mb-4">
+            <input type="text" placeholder="Add new task..." className="w-full p-3 border rounded-lg" />
+            <button className="w-full mt-2 bg-blue-600 text-white p-3 rounded-lg">Add Task</button>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+              <span>Sample Task 1</span>
+              <button className="text-red-500">Delete</button>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+              <span>Sample Task 2</span>
+              <button className="text-red-500">Delete</button>
+            </div>
+          </div>
+        </div>
+      `,
+      "dashboard": `
+        <div className="min-h-screen bg-gray-100">
+          <header className="bg-white shadow p-4">
+            <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          </header>
+          <main className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-2">Total Users</h3>
+                <p className="text-3xl font-bold text-blue-600">1,234</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-2">Revenue</h3>
+                <p className="text-3xl font-bold text-green-600">$12,345</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-2">Orders</h3>
+                <p className="text-3xl font-bold text-purple-600">567</p>
+              </div>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span>New user registered</span>
+                  <span className="text-sm text-gray-500">2 mins ago</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Order completed</span>
+                  <span className="text-sm text-gray-500">5 mins ago</span>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      `
+    };
+
+    // Find matching template
+    const lowerPrompt = prompt.toLowerCase();
+    for (const [key, template] of Object.entries(templates)) {
+      if (lowerPrompt.includes(key)) {
+        return template;
+      }
+    }
+
+    // Default template
+    return `
+      <div className="max-w-4xl mx-auto p-8">
+        <h1 className="text-4xl font-bold mb-6 text-gray-800">Your Custom App</h1>
+        <p className="text-lg text-gray-600 mb-8">Built with Jira AI - completely free!</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg text-white">
+            <h3 className="text-xl font-semibold mb-2">Feature One</h3>
+            <p>Amazing functionality that works perfectly</p>
+          </div>
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 p-6 rounded-lg text-white">
+            <h3 className="text-xl font-semibold mb-2">Feature Two</h3>
+            <p>Another great feature for your app</p>
+          </div>
+        </div>
+        <button className="mt-8 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+          Take Action
+        </button>
+      </div>
+    `;
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -65,18 +170,24 @@ const AppPage = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = message;
     setMessage("");
+    setIsGenerating(true);
 
-    // Simulate AI response
+    // Generate AI response and component
     setTimeout(() => {
+      const component = generateComponent(currentMessage);
+      setGeneratedComponent(component);
+      
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I understand you want to create that. Let me help you build it! I'll start by creating the basic structure and then we can iterate on the design and functionality together.",
+        content: `Perfect! I've created your ${currentMessage} and it's now live in the preview. The app is fully functional and ready to use. You can continue to refine it by asking for specific changes or additions.`,
         isUser: false,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+      setIsGenerating(false);
+    }, 2000);
   };
 
   const previewSizes = {
@@ -257,57 +368,84 @@ const AppPage = () => {
             <div className="h-full flex items-center justify-center">
               {viewMode === "preview" ? (
                 <Card className={`bg-background border-border shadow-lg ${previewSizes[previewMode]} transition-all duration-300`}>
-                  <div className="h-full flex items-center justify-center p-8">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-hero rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                        <Zap className="h-8 w-8 text-white" />
+                  {generatedComponent ? (
+                    <div 
+                      className="h-full w-full overflow-auto"
+                      dangerouslySetInnerHTML={{ __html: generatedComponent }}
+                    />
+                  ) : isGenerating ? (
+                    <div className="h-full flex items-center justify-center p-8">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-gradient-hero rounded-2xl mx-auto mb-4 flex items-center justify-center animate-pulse">
+                          <Zap className="h-8 w-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">
+                          Building Your App...
+                        </h3>
+                        <p className="text-muted-foreground max-w-md">
+                          Jira AI is generating your application. This will take just a moment.
+                        </p>
                       </div>
-                      <h3 className="text-xl font-semibold text-foreground mb-2">
-                        Ready to Build
-                      </h3>
-                      <p className="text-muted-foreground max-w-md">
-                        Start chatting with the AI to create your application. 
-                        Your changes will appear here in real-time.
-                      </p>
-                      <Button variant="default" className="mt-4">
-                        Get Started
-                      </Button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="h-full flex items-center justify-center p-8">
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-gradient-hero rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                          <Zap className="h-8 w-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">
+                          Ready to Build
+                        </h3>
+                        <p className="text-muted-foreground max-w-md">
+                          Start chatting with the AI to create your application. 
+                          Your changes will appear here in real-time.
+                        </p>
+                        <Button variant="default" className="mt-4">
+                          Get Started
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </Card>
               ) : (
                 <Card className="w-full h-full bg-background border-border">
                   <div className="h-full p-4">
-                    <div className="h-full bg-muted/50 rounded-md p-4 font-mono text-sm">
-                      <div className="text-muted-foreground">
-                        // Your generated code will appear here
-                        <br />
-                        // Start building to see the magic happen!
-                        <br />
-                        <br />
-                        <span className="text-blue-500">import</span>{" "}
-                        <span className="text-green-500">React</span>{" "}
-                        <span className="text-blue-500">from</span>{" "}
-                        <span className="text-yellow-500">'react'</span>;
-                        <br />
-                        <br />
-                        <span className="text-blue-500">const</span>{" "}
-                        <span className="text-green-500">App</span>{" "}
-                        <span className="text-blue-500">=</span> () {" => "}
-                        <span className="text-blue-500">{"{"}</span>
-                        <br />
-                        {"  "}<span className="text-blue-500">return</span> (
-                        <br />
-                        {"    "}<span className="text-red-500">{"<div>"}</span>
-                        <br />
-                        {"      "}<span className="text-gray-400">{"// Your AI-generated app"}</span>
-                        <br />
-                        {"    "}<span className="text-red-500">{"</div>"}</span>
-                        <br />
-                        {"  "});
-                        <br />
-                        <span className="text-blue-500">{"}"}</span>;
-                      </div>
+                    <div className="h-full bg-muted/50 rounded-md p-4 font-mono text-sm overflow-auto">
+                      {generatedComponent ? (
+                        <pre className="text-muted-foreground whitespace-pre-wrap">
+                          {generatedComponent}
+                        </pre>
+                      ) : (
+                        <div className="text-muted-foreground">
+                          // Your generated code will appear here
+                          <br />
+                          // Start building to see the magic happen!
+                          <br />
+                          <br />
+                          <span className="text-blue-500">import</span>{" "}
+                          <span className="text-green-500">React</span>{" "}
+                          <span className="text-blue-500">from</span>{" "}
+                          <span className="text-yellow-500">'react'</span>;
+                          <br />
+                          <br />
+                          <span className="text-blue-500">const</span>{" "}
+                          <span className="text-green-500">App</span>{" "}
+                          <span className="text-blue-500">=</span> () {" => "}
+                          <span className="text-blue-500">{"{"}</span>
+                          <br />
+                          {"  "}<span className="text-blue-500">return</span> (
+                          <br />
+                          {"    "}<span className="text-red-500">{"<div>"}</span>
+                          <br />
+                          {"      "}<span className="text-gray-400">{"// Your AI-generated app"}</span>
+                          <br />
+                          {"    "}<span className="text-red-500">{"</div>"}</span>
+                          <br />
+                          {"  "});
+                          <br />
+                          <span className="text-blue-500">{"}"}</span>;
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Card>

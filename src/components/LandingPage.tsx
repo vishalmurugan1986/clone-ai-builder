@@ -76,7 +76,7 @@ const LandingPage = () => {
           Build something <img src={jiraLogo} alt="Jira" className="inline h-16 w-16 mx-2" /> Jira
         </h1>
         <p className="text-xl text-white/80 mb-12 max-w-2xl">
-          Create apps and websites by chatting with AI
+          Create apps and websites by chatting with AI - completely free forever
         </p>
 
         {/* Search Input */}
