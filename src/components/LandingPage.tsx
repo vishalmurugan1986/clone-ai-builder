@@ -50,8 +50,6 @@ const LandingPage = () => {
         
         <nav className="hidden md:flex items-center gap-8">
           <a href="#" className="text-white/80 hover:text-white transition-colors">Community</a>
-          <a href="#" className="text-white/80 hover:text-white transition-colors">Pricing</a>
-          <a href="#" className="text-white/80 hover:text-white transition-colors">Enterprise</a>
           <a href="#" className="text-white/80 hover:text-white transition-colors">Learn</a>
           <a href="#" className="text-white/80 hover:text-white transition-colors">Launched</a>
         </nav>
