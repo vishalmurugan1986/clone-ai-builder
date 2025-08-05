@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			backgroundImage: {
+				'gradient-lovable': 'var(--gradient-lovable)',
+				'gradient-hero': 'var(--gradient-hero)',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
